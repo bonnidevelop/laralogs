@@ -19,7 +19,7 @@ A beautiful Laravel package for viewing and managing application logs with a mod
 ### Via Composer
 
 ```bash
-composer require laralogs/laralogs
+composer require bonnidevelop/laralogs
 ```
 
 ### Manual Installation
