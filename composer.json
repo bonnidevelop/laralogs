@@ -6,7 +6,7 @@
     "authors": [
         {
             "name": "LaraLogs Team",
-            "email": "hello@laralogs.com"
+            "email": "bonnidas037@gmail.com"
         }
     ],
     "keywords": [
@@ -38,6 +38,9 @@
         "psr-4": {
             "LaraLogs\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "phpunit"
     },
     "extra": {
         "laravel": {
