@@ -5,6 +5,7 @@ namespace LaraLogs\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Routing\Controller;
 
 class LaraLogsController extends Controller
 {
