@@ -1,5 +1,5 @@
 {
-    "name": "bonnidevelop/laralogs",
+    "name": "laralogs/laralogs",
     "description": "A beautiful Laravel package for viewing and managing application logs with a modern web interface",
     "type": "library",
     "license": "MIT",
