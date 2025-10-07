@@ -1,0 +1,55 @@
+{
+    "name": "laralogs/laralogs",
+    "description": "A beautiful Laravel package for viewing and managing application logs with a modern web interface",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "LaraLogs Team",
+            "email": "hello@laralogs.com"
+        }
+    ],
+    "keywords": [
+        "laravel",
+        "logs",
+        "logging",
+        "debug",
+        "monitoring",
+        "web-interface"
+    ],
+    "homepage": "https://github.com/laralogs/laralogs",
+    "support": {
+        "issues": "https://github.com/laralogs/laralogs/issues",
+        "source": "https://github.com/laralogs/laralogs"
+    },
+    "require": {
+        "php": "^8.0",
+        "illuminate/support": "^9.0|^10.0|^11.0",
+        "illuminate/http": "^9.0|^10.0|^11.0",
+        "illuminate/routing": "^9.0|^10.0|^11.0",
+        "illuminate/view": "^9.0|^10.0|^11.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0|^10.0",
+        "orchestra/testbench": "^7.0|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "LaraLogs\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LaraLogs\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaraLogs\\LaraLogsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
