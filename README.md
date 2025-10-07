@@ -225,9 +225,9 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/laralogs/laralogs/issues)
-- **Documentation**: [GitHub Wiki](https://github.com/laralogs/laralogs/wiki)
-- **Email**: hello@laralogs.com
+- **Issues**: [GitHub Issues](https://github.com/bonnidevelop/laralogs/issues)
+- **Documentation**: [GitHub Repository](https://github.com/bonnidevelop/laralogs)
+
 
 ## 🙏 Acknowledgments
 

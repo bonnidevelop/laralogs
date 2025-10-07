@@ -17,10 +17,10 @@
         "monitoring",
         "web-interface"
     ],
-    "homepage": "https://github.com/laralogs/laralogs",
+    "homepage": "https://github.com/bonnidevelop/laralogs",
     "support": {
-        "issues": "https://github.com/laralogs/laralogs/issues",
-        "source": "https://github.com/laralogs/laralogs"
+        "issues": "https://github.com/bonnidevelop/laralogs/issues",
+        "source": "https://github.com/bonnidevelop/laralogs"
     },
     "require": {
         "php": "^8.0",
