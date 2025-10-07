@@ -14,12 +14,6 @@ class LaraLogsAuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if user is authenticated
-        if (!Auth::check()) {
-            abort(403, 'Unauthorized access to LaraLogs.');
-        }
-
-        $user = Auth::user();
         $config = config('laralogs');
 
         // If in production and not enabled, deny access
@@ -27,8 +21,14 @@ class LaraLogsAuthMiddleware
             abort(403, 'LaraLogs is not enabled in production environment.');
         }
 
-        // If in production and enabled, check allowed emails
+        // If in production and enabled, check authentication and allowed emails
         if (app()->environment('production') && $config['enabled_in_production']) {
+            // Check if user is authenticated
+            if (!Auth::check()) {
+                abort(403, 'Unauthorized access to LaraLogs.');
+            }
+
+            $user = Auth::user();
             $allowedEmails = $config['allowed_emails'] ?? [];
             
             if (!in_array($user->email, $allowedEmails)) {
@@ -36,7 +36,7 @@ class LaraLogsAuthMiddleware
             }
         }
 
-        // In development, allow any authenticated user
+        // In development, allow access without authentication
         return $next($request);
     }
 }
