@@ -11,4 +11,5 @@ Route::prefix($prefix)->middleware($middleware)->group(function () {
     Route::get('/', [LaraLogsController::class, 'index'])->name('laralogs.index');
     Route::delete('/clear', [LaraLogsController::class, 'clear'])->name('laralogs.clear');
     Route::get('/download', [LaraLogsController::class, 'download'])->name('laralogs.download');
+    Route::delete('/delete', [LaraLogsController::class, 'delete'])->name('laralogs.delete');
 });

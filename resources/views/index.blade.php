@@ -561,8 +561,11 @@
                 <!-- Log Entries -->
                 @if(count($logs) > 0)
                 <div class="log-container">
-                    @foreach($logs as $log)
-                    <div class="log-entry {{ strtolower($log['level']) }}">
+                    @foreach($logs as $i => $log)
+                    @php
+                        $entryHash = hash('sha256', ($log['timestamp'] ?? '') . '|' . ($log['level'] ?? '') . '|' . ($log['message'] ?? '') . '|' . trim($log['context'] ?? ''));
+                    @endphp
+                    <div class="log-entry {{ strtolower($log['level']) }}" data-entry-hash="{{ $entryHash }}">
                         <div class="card-body">
                             <div class="log-header">
                                 <div class="log-meta">
@@ -589,6 +592,17 @@
                                                 @endswitch
                                             ">{{ $log['level'] }}</span>
                                     <small class="text-muted">{{ $log['timestamp'] }}</small>
+                                </div>
+                                <div class="header-actions">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="copyLog(this)" title="Copy">
+                                        📋 Copy
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="copyLogMarkdown(this)" title="Copy as Markdown">
+                                        📝 Copy MD
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteLog(this)" title="Delete">
+                                        🗑️ Delete
+                                    </button>
                                 </div>
                             </div>
 
@@ -633,6 +647,13 @@
         @csrf
         @method('DELETE')
         <input type="hidden" name="log" value="{{ $selectedLog }}">
+    </form>
+
+    <form action="{{ route('laralogs.delete') }}" method="POST" id="deleteEntryForm" class="hidden">
+        @csrf
+        @method('DELETE')
+        <input type="hidden" name="log" value="{{ $selectedLog }}">
+        <input type="hidden" name="hash" id="deleteEntryHash" value="">
     </form>
 
     <!-- Success/Error Messages -->
@@ -708,6 +729,74 @@
                 cancelClear();
             }
         });
+
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('Copied to clipboard');
+            } catch (err) {
+                showToast('Failed to copy', true);
+            }
+        }
+
+        function getEntryElementsFromButton(btn) {
+            const entry = btn.closest('.log-entry');
+            const messageEl = entry.querySelector('.log-message');
+            const contextEl = entry.querySelector('.log-context');
+            const levelBadge = entry.querySelector('.badge');
+            const timeEl = entry.querySelector('.text-muted');
+            return { entry, messageEl, contextEl, levelBadge, timeEl };
+        }
+
+        function copyLog(btn) {
+            const { messageEl, contextEl, levelBadge, timeEl } = getEntryElementsFromButton(btn);
+            const level = levelBadge ? levelBadge.textContent.trim() : '';
+            const timestamp = timeEl ? timeEl.textContent.trim() : '';
+            const message = messageEl ? messageEl.textContent.trim() : '';
+            const context = contextEl ? contextEl.textContent.trim() : '';
+            const text = `[${timestamp}] ${level}: ${message}` + (context ? `\n${context}` : '');
+            copyToClipboard(text);
+        }
+
+        function copyLogMarkdown(btn) {
+            const { messageEl, contextEl, levelBadge, timeEl } = getEntryElementsFromButton(btn);
+            const level = levelBadge ? levelBadge.textContent.trim() : '';
+            const timestamp = timeEl ? timeEl.textContent.trim() : '';
+            const message = messageEl ? messageEl.textContent.trim() : '';
+            const context = contextEl ? contextEl.textContent.trim() : '';
+            const md = `- **Time**: ${timestamp}\n- **Level**: ${level}\n- **Message**: ${message}` + (context ? `\n\n\`\`\`\n${context}\n\`\`\`` : '');
+            copyToClipboard(md);
+        }
+
+        function deleteLog(btn) {
+            const { entry } = getEntryElementsFromButton(btn);
+            const hash = entry.getAttribute('data-entry-hash');
+            if (!hash) {
+                showToast('Unable to identify log entry', true);
+                return;
+            }
+            if (!confirm('Delete this log entry?')) {
+                return;
+            }
+            const input = document.getElementById('deleteEntryHash');
+            input.value = hash;
+            document.getElementById('deleteEntryForm').submit();
+        }
+
+        function showToast(message, isError = false) {
+            const el = document.createElement('div');
+            el.className = 'alert ' + (isError ? 'alert-danger' : 'alert-success');
+            el.style.position = 'fixed';
+            el.style.top = '20px';
+            el.style.right = '20px';
+            el.style.zIndex = '1001';
+            el.textContent = (isError ? '❌ ' : '✅ ') + message;
+            document.body.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            }, 2000);
+        }
     </script>
 </body>
 

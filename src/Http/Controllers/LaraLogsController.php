@@ -113,6 +113,87 @@ class LaraLogsController extends Controller
     }
 
     /**
+     * Delete a single log entry by hash.
+     */
+    public function delete(Request $request)
+    {
+        $request->validate([
+            'hash' => 'required|string',
+            'log' => 'nullable|string'
+        ]);
+
+        $config = config('laralogs');
+        $logFiles = $config['log_files'];
+        $selectedLog = $request->get('log', 'laravel');
+
+        if (!isset($logFiles[$selectedLog])) {
+            return redirect()->route('laralogs.index')->with('error', 'Log file not found!');
+        }
+
+        $logPath = $logFiles[$selectedLog]['path'];
+        $targetHash = $request->input('hash');
+
+        if (!File::exists($logPath)) {
+            return redirect()->route('laralogs.index', ['log' => $selectedLog])->with('error', 'Log file not found!');
+        }
+
+        $content = File::get($logPath);
+        $lines = preg_split("/\r?\n/", $content);
+
+        $blocks = [];
+        $current = [];
+        foreach ($lines as $line) {
+            if (preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] \w+\.\w+: /', $line)) {
+                if (!empty($current)) {
+                    $blocks[] = $current;
+                }
+                $current = [$line];
+            } else {
+                $current[] = $line;
+            }
+        }
+        if (!empty($current)) {
+            $blocks[] = $current;
+        }
+
+        $keptBlocks = [];
+        $deleted = false;
+        foreach ($blocks as $block) {
+            $raw = rtrim(implode("\n", $block));
+            if ($raw === '') {
+                continue;
+            }
+            $timestamp = '';
+            $level = '';
+            $message = '';
+            $context = '';
+            if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] \w+\.(\w+): (.*)$/', $block[0], $m)) {
+                $timestamp = $m[1] ?? '';
+                $level = strtoupper($m[2] ?? '');
+                $message = $m[3] ?? '';
+                if (count($block) > 1) {
+                    $contextLines = array_slice($block, 1);
+                    $contextLines = array_filter($contextLines, function ($l) {
+                        return trim($l) !== '';
+                    });
+                    $context = rtrim(implode("\n", $contextLines));
+                }
+            }
+            $hash = hash('sha256', $timestamp . '|' . $level . '|' . $message . '|' . trim($context));
+            if (!$deleted && hash_equals($targetHash, $hash)) {
+                $deleted = true;
+                continue;
+            }
+            $keptBlocks[] = $raw;
+        }
+
+        File::put($logPath, implode("\n", $keptBlocks) . (empty($keptBlocks) ? '' : "\n"));
+
+        return redirect()->route('laralogs.index', ['log' => $selectedLog])
+            ->with($deleted ? 'success' : 'error', $deleted ? 'Log entry deleted.' : 'Log entry not found.');
+    }
+
+    /**
      * Parse log file content.
      */
     private function parseLogFile($content)

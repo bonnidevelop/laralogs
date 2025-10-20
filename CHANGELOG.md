@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.6] - 2024-12-19
+
+### Added
+- Per-log entry action buttons (Copy, Copy as Markdown, Delete)
+- Individual log entry deletion functionality
+- Copy log entries to clipboard in plain text format
+- Copy log entries as Markdown format for documentation
+- Single-entry delete endpoint with hash-based identification
+- Enhanced user experience with per-entry controls
+
+### Changed
+- Updated UI to include action buttons for each log entry
+- Improved log management with granular control
+
+## [1.0.5] - Previous Release
+
 ### Added
 - Initial release of LaraLogs package
 - Beautiful web interface for viewing Laravel logs
